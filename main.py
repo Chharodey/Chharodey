@@ -3,6 +3,7 @@ import random
 from constants import *
 
 
+#Класс отвечающий за каждую отдельную кнопку на поле
 class Cell(tkinter.Button):
 
     def __init__(self, master, x, y, food, wood, rock, *args, **kwargs):

@@ -20,6 +20,9 @@ class Cell(tkinter.Button):
     def Change_Owner(self, Color):
         self.own=Color
 
+    def Change_Building(self, building):
+        self.building=building
+
 
 class Playing_Field:
 
@@ -34,6 +37,7 @@ class Playing_Field:
         strings=f.readlines()
         f.close()
         self.cell_cost = 'x'
+        self.name = 'x'
         self.res_yellow={'food':4,'wood':4, 'rock':0, 'money':6}
         self.res_blue={'food':4,'wood':4, 'rock':0, 'money':6}
         self.squares=[]
@@ -130,7 +134,9 @@ class Playing_Field:
 
 
         self.b1 = tkinter.Button(text='Купить', command=game.Buying_cell, font=FONT, bg=COLORS.get('Olive'))
+        self.b2 = tkinter.Button(text='Купить', command=game.Buying_Building, width=27, font=FONT, bg=COLORS.get('Aqua'))
         self.b1.place(x=460, y=111)
+        self.b2.place(x=342, y=345)
         self.l1.place(x=342, y=1)
         self.l2.place(x=342, y=112)
         self.l3.place(x=342, y=200)
@@ -149,9 +155,20 @@ class Playing_Field:
     def Buying_cell(self):
         if self.cell_cost != 'x':
             if self.res_player.get('money')>=self.cell_cost and self.own=='Black':
-                self.res_player['money']=self.res_player.get('money') - self.cell_cost
+                self.res_player['money'] = self.res_player.get('money') - self.cell_cost
                 self.squares[self.x][self.y].Change_Owner(Player_color)
                 self.own=Player_color
+                game.Update()
+
+
+    def Buying_Building(self):
+        if self.name!='x':
+            if self.own==Player_color and self.building=='Пусто' and self.res_player.get('wood')>=self.coast_wood and self.res_player.get('money') >= self.coast_money and self.res_player.get('rock')>=self.coast_rock:
+                self.res_player['wood'] = self.res_player.get('wood') - self.coast_wood
+                self.res_player['rock'] = self.res_player.get('rock') - self.coast_rock
+                self.res_player['money'] = self.res_player.get('money') - self.coast_money
+                self.squares[self.x][self.y].Change_Building(self.name)
+                self.building = self.name
                 game.Update()
 
 

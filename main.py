@@ -227,7 +227,31 @@ class Playing_Field:
         build_menu.add_command(label='Снести здание', command=game.Break_Building)
 
         trade_menu = tkinter.Menu(menu, tearoff=0)
-        trade_menu.add_command(label='Еда')
+
+        trade_menu1 = tkinter.Menu(menu, tearoff=0)
+        trade_menu1.add_command(label='Еда (1)', command=lambda: game.Trade('Buy', 'food', 1))
+        trade_menu1.add_command(label='Дерево (2)', command=lambda: game.Trade('Buy', 'wood', 2))
+        trade_menu1.add_command(label='Камень (2)', command=lambda: game.Trade('Buy', 'rock', 2))
+        trade_menu1.add_command(label='Доски (3)', command=lambda: game.Trade('Buy', 'plank', 3))
+        trade_menu1.add_command(label='Кирпичи (1.5)', command=lambda: game.Trade('Buy', 'brick', 1.5))
+        trade_menu1.add_command(label='Инструменты (5)', command=lambda: game.Trade('Buy', 'instrument', 5))
+
+        trade_menu2 = tkinter.Menu(menu, tearoff=0)
+        trade_menu2.add_command(label='Дерево (1)', command=lambda: game.Trade('Sell', 'wood', 1))
+        trade_menu2.add_command(label='Камень (1)', command=lambda: game.Trade('Sell', 'rock', 1))
+        trade_menu2.add_command(label='Самоцветы (3)', command=lambda: game.Trade('Sell', 'gem', 3))
+        trade_menu2.add_command(label='Доски (1.5)', command=lambda: game.Trade('Sell', 'plank', 1.5))
+        trade_menu2.add_command(label='Кирпичи (0.5)', command=lambda: game.Trade('Sell', 'brick', 0.5))
+        trade_menu2.add_command(label='Металл (2)', command=lambda: game.Trade('Sell', 'metal', 2))
+        trade_menu2.add_command(label='Мебель (4)', command=lambda: game.Trade('Sell', 'furniture', 4))
+        trade_menu2.add_command(label='Керамика (1)', command=lambda: game.Trade('Sell', 'ceramic', 1))
+        trade_menu2.add_command(label='Статуя (5)', command=lambda: game.Trade('Sell', 'statue', 5))
+        trade_menu2.add_command(label='Инструменты (3)', command=lambda: game.Trade('Sell', 'instrument', 3))
+        trade_menu2.add_command(label='Драгоценности (6)', command=lambda: game.Trade('Sell', 'jewel', 6))
+
+        trade_menu.add_cascade(label='Покупка', menu=trade_menu1)
+        trade_menu.add_cascade(label='Продажа', menu=trade_menu2)
+
         menu.add_cascade(label='Строительство', menu=build_menu)
         menu.add_cascade(label='Торговля', menu=trade_menu)
 
@@ -311,8 +335,19 @@ class Playing_Field:
             game.Update()
 
 
-    def Trade(self):
-        return 1
+    def Trade(self, operation, res, price):
+        if operation == 'Buy' and self.res_player.get('money') >= price:
+            self.res_player[res] += 1
+            self.res_player['money'] -= price
+        elif operation == 'Sell' and self.res_player.get(res) >= 1:
+            self.res_player[res] -= 1
+            self.res_player['money'] += price
+
+        self.l4.config(text=f"Еда = {self.res_player.get('food')}, Дерево = {self.res_player.get('wood')}, Глина = {self.res_player.get('clay')}, Камень = {self.res_player.get('rock')}"
+                     f", Руда = {self.res_player.get('ore')}\nЗолото = {self.res_player.get('gold')}, Самоцветы = {self.res_player.get('gem')}, Доски = {self.res_player.get('plank')}"
+                     f", Кирпичи = {self.res_player.get('brick')}\nМеталл = {self.res_player.get('metal')}, Мебель = {self.res_player.get('furniture')}, "
+                     f"Керамика = {self.res_player.get('ceramic')}, Статуи = {self.res_player.get('statue')}\nИнструменты = {self.res_player.get('instrument')}, "
+                     f"Драгоценности = {self.res_player.get('jewel')}, Монеты = {self.res_player.get('money')}")
 
 
     def Start(self):

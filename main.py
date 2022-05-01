@@ -62,7 +62,7 @@ class Playing_Field:
                     self.color = 'Olive'
                     self.food = randint(1, 3)
                     self.wood = randint(2, 6)
-                    self.clay = 0
+                    self.clay = randint(0, 1)
                     self.rock = randint(0, 2)
                     self.ore = 0
                     self.gold = 0
@@ -73,13 +73,13 @@ class Playing_Field:
                     self.food = randint(0, 2)
                     self.wood = randint(0, 3)
                     self.clay = 0
-                    self.rock = randint(3, 7)
-                    self.ore = randint(1, 4)
+                    self.rock = randint(3, 6)
+                    self.ore = randint(1, 3)
                     a = randint(1, 10)
                     if a < 5:
-                        self.gold = randint(1,2)
+                        self.gold = 1
                     elif a == 5:
-                        self.gold = 3
+                        self.gold = 2
                     else:
                         self.gold = 0
                     a=randint(1, 10)
@@ -102,8 +102,8 @@ class Playing_Field:
                     self.color = 'Brown'
                     self.food = randint(2, 4)
                     self.clay = randint(2, 4)
-                    self.wood = randint(1, 2)
-                    self.rock = randint(0, 1)
+                    self.wood = randint(1, 3)
+                    self.rock = randint(0, 2)
                     self.ore = 0
                     self.gold = 0
                     self.gem = 0
@@ -111,7 +111,7 @@ class Playing_Field:
                 elif strings[i][j] == 'R':
                     self.color = 'Aqua'
                     self.food = 0
-                    self.clay = randint(3, 8)
+                    self.clay = randint(3, 7)
                     self.wood = 0
                     self.rock = 0
                     self.ore = 0
@@ -137,7 +137,7 @@ class Playing_Field:
                     self.ore = 0
                     self.gold = 0
                     self.gem = 0
-                    self.terrain = 'Замок'
+                    self.terrain = 'Крепость'
                     if strings[i][j] == 'Y':
                         self.own = 'Yellow'
                     else:
@@ -180,7 +180,7 @@ class Playing_Field:
         self.coast_brick = building[5]
         self.coast_instr = building[6]
         self.coast_money = building[7]
-        self.l3.config(text=f"Название постройки\n{self.name}\n\nВозможная местность\n{self.read_terrain}\n\nОписание\n{self.message}\n\n\n"
+        self.l3.config(text=f"Название постройки\n{self.name}\n\nВозможная местность\n{self.read_terrain}\n\nОписание\n{self.message}\n\n"
                             f"Дерево = {self.coast_wood}, Камень = {self.coast_rock}\nДоски = {self.coast_plank}, Кирпичи = {self.coast_brick}\nИнструменты = {self.coast_instr}\nМонеты = {self.coast_money}")
 
 
@@ -188,9 +188,42 @@ class Playing_Field:
         menu = tkinter.Menu(self.window)
         self.window.config(menu=menu)
         build_menu = tkinter.Menu(menu, tearoff=0)
-        build_menu.add_command(label='Ферма', command = lambda: self.Building_Pick('Ферма'))
-        build_menu.add_command(label='Домик лесоруба', command = lambda: self.Building_Pick('Домик лесоруба'))
-        build_menu.add_command(label='Карьер', command=lambda: self.Building_Pick('Карьер'))
+
+        build_menu1 = tkinter.Menu(menu, tearoff=0)
+        build_menu1.add_command(label='Ферма', command=lambda: self.Building_Pick('Ферма'))
+        build_menu1.add_command(label='Лесоруб', command=lambda: self.Building_Pick('Лесоруб'))
+        build_menu1.add_command(label='Карьер', command=lambda: self.Building_Pick('Карьер'))
+        build_menu1.add_command(label='Шахта', command=lambda: self.Building_Pick('Шахта'))
+        build_menu1.add_command(label='Рыбак', command=lambda: self.Building_Pick('Рыбак'))
+        build_menu1.add_command(label='Ловцы жемчуга', command=lambda: self.Building_Pick('Ловцы жемчуга'))
+
+        build_menu2 = tkinter.Menu(menu, tearoff=0)
+        build_menu2.add_command(label='Мельница', command=lambda: self.Building_Pick('Мельница'))
+        build_menu2.add_command(label='Лесопилка', command=lambda: self.Building_Pick('Лесопилка'))
+        build_menu2.add_command(label='Каменоломня', command=lambda: self.Building_Pick('Каменоломня'))
+        build_menu2.add_command(label='Прииск', command=lambda: self.Building_Pick('Прииск'))
+
+        build_menu3 = tkinter.Menu(menu, tearoff=0)
+        build_menu3.add_command(label='Столяр', command=lambda: self.Building_Pick('Столяр'))
+        build_menu3.add_command(label='Печь для обжига', command=lambda: self.Building_Pick('Печь для обжига'))
+        build_menu3.add_command(label='Плавильня', command=lambda: self.Building_Pick('Плавильня'))
+        build_menu3.add_command(label='Монетный двор', command=lambda: self.Building_Pick('Монетный двор'))
+
+        build_menu4 = tkinter.Menu(menu, tearoff=0)
+        build_menu4.add_command(label='Мебельщик', command=lambda: self.Building_Pick('Мебельщик'))
+        build_menu4.add_command(label='Гончар', command=lambda: self.Building_Pick('Гончар'))
+        build_menu4.add_command(label='Скульптор', command=lambda: self.Building_Pick('Скульптор'))
+        build_menu4.add_command(label='Кузнец', command=lambda: self.Building_Pick('Кузнец'))
+        build_menu4.add_command(label='Ювелир', command=lambda: self.Building_Pick('Ювелир'))
+
+        build_menu5 = tkinter.Menu(menu, tearoff=0)
+        build_menu5.add_command(label='Банк', command=lambda: self.Building_Pick('Банк'))
+
+        build_menu.add_cascade(label='Базовая добыча', menu=build_menu1)
+        build_menu.add_cascade(label='Продвинутая добыча', menu=build_menu2)
+        build_menu.add_cascade(label='Базовая обработка', menu=build_menu3)
+        build_menu.add_cascade(label='Продвинутая обработка', menu=build_menu4)
+        build_menu.add_cascade(label='Крепость', menu=build_menu5)
 
         trade_menu = tkinter.Menu(menu, tearoff=0)
         trade_menu.add_command(label='Еда')
@@ -206,7 +239,7 @@ class Playing_Field:
                             "Прирост Камня = 0\nПрирост Руды = 0\nПрирост Золота = 0\nПрирост Самоцветов = 0\n"
                             "Местность = 0\nПостройка = 0\nХозяин = 0", font=FONT, bg=COLORS.get('Silver'), width=27, justify=tkinter.LEFT)
         self.l2 = tkinter.Label(text="Стоимость клетки=x", font=FONT, width=19, bg=COLORS.get('Olive'))
-        self.l3 = tkinter.Label(text=f"Название постройки\nПусто\n\nВозможная местность\nПусто\n\nОписание\nПусто\n\n\n"
+        self.l3 = tkinter.Label(text=f"Название постройки\nПусто\n\nВозможная местность\nПусто\n\nОписание\nПусто\n\n"
                                      f"Дерево = х, Камень = х\nДоски = х, Кирпичи = х\nИнструменты = х\nМонеты = х", bg=COLORS.get('Aqua'), width=27, height=15, font=FONT)
         self.l4 = tkinter.Label(text=f"Еда = {self.res_player.get('food')}, Дерево = {self.res_player.get('wood')}, Глина = {self.res_player.get('clay')}, Камень = {self.res_player.get('rock')}"
                                    f", Руда = {self.res_player.get('ore')}, Золото = {self.res_player.get('gold')}\nСамоцветы = {self.res_player.get('gem')}, Доски = {self.res_player.get('plank')}"
@@ -249,7 +282,7 @@ class Playing_Field:
     def Buying_Building(self):
         if self.name!='x':
             if self.own==Player_color and self.building == 'Пусто' and self.res_player.get('wood') >= self.coast_wood and self.res_player.get('money') >= self.coast_money and self.res_player.get('rock') >= self.coast_rock\
-                    and self.res_player.get('plank') >= self.coast_plank and self.res_player.get('brick') >= self.coast_brick and self.res_player.get('instrument') >= self.coast_instr:
+                    and self.res_player.get('plank') >= self.coast_plank and self.res_player.get('brick') >= self.coast_brick and self.res_player.get('instrument') >= self.coast_instr and self.terrain in self.type_terrain:
                 self.res_player['wood'] = self.res_player.get('wood') - self.coast_wood
                 self.res_player['rock'] = self.res_player.get('rock') - self.coast_rock
                 self.res_player['money'] = self.res_player.get('money') - self.coast_money

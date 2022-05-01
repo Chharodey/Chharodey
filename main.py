@@ -1,21 +1,25 @@
 import tkinter
-import random
+from random import *
 from constants import *
 
 
 class Cell(tkinter.Button):
 
-    def __init__(self, master, x, y, food, wood, rock, terrain, own, cell_cost, *args, **kwargs):
+    def __init__(self, master, x, y, food, wood, clay, rock, ore, gold, gem, terrain, own, cell_cost, *args, **kwargs):
         super(Cell, self).__init__(master, *args, **kwargs)
-        self.x=x
-        self.y=y
-        self.food=food
-        self.wood=wood
-        self.rock=rock
-        self.terrain=terrain
-        self.cell_cost=cell_cost
+        self.x = x
+        self.y = y
+        self.food = food
+        self.wood = wood
+        self.clay = clay
+        self.rock = rock
+        self.ore = ore
+        self.gold = gold
+        self.gem = gem
+        self.terrain = terrain
+        self.cell_cost = cell_cost
         self.building = 'Пусто'
-        self.own=own
+        self.own = own
 
     def Change_Owner(self, Color):
         self.own=Color
@@ -40,6 +44,7 @@ class Playing_Field:
         self.name = 'x'
         self.res_yellow={'food':4,'wood':4, 'rock':0, 'money':6}
         self.res_blue={'food':4,'wood':4, 'rock':0, 'money':6}
+        self.normal_price={'food':1,'wood':randint(2,3)}
         self.squares=[]
         self.ROW=len(strings)
         self.COL=len(strings[1])-1
@@ -53,34 +58,90 @@ class Playing_Field:
                 self.cell_cost = (self.COL-1)-difference
                 if strings[i][j] == 'F':
                     self.color = 'Olive'
-                    self.food = random.randint(1, 3)
-                    self.wood = random.randint(2, 6)
-                    self.rock = random.randint(0, 2)
+                    self.food = randint(1, 3)
+                    self.wood = randint(2, 6)
+                    self.clay = 0
+                    self.rock = randint(0, 2)
+                    self.ore = 0
+                    self.gold = 0
+                    self.gem=0
                     self.terrain = 'Лес'
                 elif strings[i][j] == 'M':
                     self.color = 'Grey'
-                    self.food = random.randint(0, 2)
-                    self.wood = random.randint(0, 3)
-                    self.rock = random.randint(3, 7)
+                    self.food = randint(0, 2)
+                    self.wood = randint(0, 3)
+                    self.clay = 0
+                    self.rock = randint(3, 7)
+                    self.ore = randint(1, 4)
+                    a = randint(1, 10)
+                    if a < 5:
+                        self.gold = randint(1,2)
+                    elif a == 5:
+                        self.gold = 3
+                    else:
+                        self.gold = 0
+                    a=randint(1, 10)
+                    if a==1:
+                        self.gem = 1
+                    else:
+                        self.gem = 0
                     self.terrain = 'Горы'
                 elif strings[i][j] == 'G':
                     self.color = 'Green'
-                    self.food = random.randint(2, 5)
-                    self.wood = random.randint(1, 2)
-                    self.rock = random.randint(0, 1)
+                    self.food = randint(2, 5)
+                    self.clay = randint(0, 1)
+                    self.wood = randint(1, 2)
+                    self.rock = randint(0, 1)
+                    self.ore = 0
+                    self.gold = 0
+                    self.gem = 0
                     self.terrain = 'Луг'
+                elif strings[i][j] == 'H':
+                    self.color = 'Brown'
+                    self.food = randint(2, 4)
+                    self.clay = randint(2, 4)
+                    self.wood = randint(1, 2)
+                    self.rock = randint(0, 1)
+                    self.ore = 0
+                    self.gold = 0
+                    self.gem = 0
+                    self.terrain = 'Холм'
+                elif strings[i][j] == 'R':
+                    self.color = 'Aqua'
+                    self.food = 0
+                    self.clay = randint(3, 8)
+                    self.wood = 0
+                    self.rock = 0
+                    self.ore = 0
+                    a = randint(1, 100)
+                    if a < 21:
+                        self.gold = 1
+                    else:
+                        self.gold = 0
+                    a = randint(1, 100)
+                    if a < 6:
+                        self.gem = 2
+                    elif a < 26:
+                        self.gem = 1
+                    else:
+                        self.gem = 0
+                    self.terrain = 'Река'
                 elif (strings[i][j] == 'Y') or (strings[i][j] == 'B'):
                     self.color = 'Silver'
                     self.food = 0
                     self.wood = 0
+                    self.clay = 0
                     self.rock = 0
+                    self.ore = 0
+                    self.gold = 0
+                    self.gem = 0
                     self.terrain = 'Замок'
                     if strings[i][j] == 'Y':
                         self.own = 'Yellow'
                     else:
                         self.own = 'Blue'
 
-                sqr=Cell(Playing_Field.window, i, j, self.food, self.wood, self.rock, self.terrain, self.own, self.cell_cost, width=4, height=2, bg=COLORS.get(f'{self.color}'))
+                sqr=Cell(Playing_Field.window, i, j, self.food, self.wood, self.clay, self.rock, self.ore, self.gold, self.gem, self.terrain, self.own, self.cell_cost, width=4, height=2, bg=COLORS.get(f'{self.color}'))
                 sqr.config(command=lambda button = sqr: self.clicking_on_square(button))
                 line.append(sqr)
             self.squares.append(line)
@@ -89,7 +150,11 @@ class Playing_Field:
     def clicking_on_square(self, pressed_square):
         self.food = pressed_square.food
         self.wood = pressed_square.wood
+        self.clay = pressed_square.clay
         self.rock = pressed_square.rock
+        self.ore = pressed_square.ore
+        self.gold = pressed_square.gold
+        self.gem = pressed_square.gem
         self.x = pressed_square.x
         self.y = pressed_square.y
         self.own = pressed_square.own
@@ -111,20 +176,24 @@ class Playing_Field:
 
 
     def Field_Creation(self):
-        menubar = tkinter.Menu(self.window)
-        self.window.config(menu=menubar)
-        game_menu = tkinter.Menu(menubar, tearoff=0)
-        game_menu.add_command(label='Ферма', command = lambda: self.Building_Pick('Ферма'))
-        game_menu.add_command(label='Домик лесоруба', command = lambda: self.Building_Pick('Домик лесоруба'))
-        menubar.add_cascade(label='Строительство', menu=game_menu)
+        menu = tkinter.Menu(self.window)
+        self.window.config(menu=menu)
+        build_menu = tkinter.Menu(menu, tearoff=0)
+        build_menu.add_command(label='Ферма', command = lambda: self.Building_Pick('Ферма'))
+        build_menu.add_command(label='Домик лесоруба', command = lambda: self.Building_Pick('Домик лесоруба'))
+
+        trade_menu = tkinter.Menu(menu, tearoff=0)
+        trade_menu.add_command(label='Еда')
+        menu.add_cascade(label='Строительство', menu=build_menu)
+        menu.add_cascade(label='Торговля', menu=trade_menu)
 
 
         for i in range(self.ROW):
             for j in range(self.COL):
                 sqr=self.squares[i][j]
                 sqr.grid(row=i, column=j)
-        self.l1 = tkinter.Label(text="Координаты клетки x=x, y=y\nПрирост Еды = 0\n"
-                            "Прирост Дерева = 0\nПрирост Камня = 0\n"
+        self.l1 = tkinter.Label(text="Координаты клетки x=x, y=y\nПрирост Еды = 0\nПрирост Дерева = 0\nПрирост Глины = 0\n"
+                            "Прирост Камня = 0\nПрирост Руды = 0\nПрирост Золота = 0\nПрирост Самоцветов = 0\n"
                             "Местность = 0\nПостройка = 0\nХозяин = 0", font=FONT, bg=COLORS.get('Silver'), width=27, justify=tkinter.LEFT)
         self.l2 = tkinter.Label(text="Стоимость клетки=x", font=FONT, bg=COLORS.get('Olive'))
         self.l3 = tkinter.Label(text="Название постройки\nПусто\n\nОписание\nПусто\n\n\nДерево = x, Камень = x\n"
@@ -134,7 +203,7 @@ class Playing_Field:
 
 
         self.b1 = tkinter.Button(text='Купить', command=game.Buying_cell, font=FONT, bg=COLORS.get('Olive'))
-        self.b2 = tkinter.Button(text='Купить', command=game.Buying_Building, width=27, font=FONT, bg=COLORS.get('Aqua'))
+        self.b2 = tkinter.Button(text='Купить', command=game.Buying_Building, width=27, font=FONT, bg=COLORS.get('Brown'))
         self.b1.place(x=460, y=111)
         self.b2.place(x=342, y=345)
         self.l1.place(x=342, y=1)
@@ -144,9 +213,9 @@ class Playing_Field:
 
 
     def Update(self):
-        self.l1.config(text=f"Координаты клетки x={self.x}, y={self.y}\nПрирост Еды = {self.food}\n"
-                            f"Прирост Дерева = {self.wood}\nПрирост Камня = {self.rock}\n"
-                            f"Местность = {self.terrain}\nПостройка = {self.building}\nХозяин = {self.own}")
+        self.l1.config(text=f"Координаты клетки x={self.x}, y={self.y}\nПрирост Еды = {self.food}\nПрирост Дерева = {self.wood}\n"
+                            f"Прирост Глины = {self.clay}\nПрирост Камня = {self.rock}\nПрирост Руды = {self.ore}\nПрирост Золота = {self.gold}\n"
+                            f"Прирост Самоцветов = {self.gem}\nМестность = {self.terrain}\nПостройка = {self.building}\nХозяин = {self.own}")
         self.l2.config(text=f"Стоимость клетки={self.cell_cost}")
         self.l4.config(text=f"Еда = {self.res_player.get('food')}, Дерево = {self.res_player.get('wood')}, Камень = {self.res_player.get('rock')}"
                                    f", Монеты = {self.res_player.get('money')}")
@@ -170,6 +239,10 @@ class Playing_Field:
                 self.squares[self.x][self.y].Change_Building(self.name)
                 self.building = self.name
                 game.Update()
+
+
+    def Trade(self):
+        return 1
 
 
     def Start(self):

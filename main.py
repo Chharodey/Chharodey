@@ -297,11 +297,25 @@ class Playing_Field:
 
     def Buying_cell(self):
         if self.cell_cost != 'x':
-            if self.res_player.get('money')>=self.cell_cost and self.own=='Black':
-                self.res_player['money'] = self.res_player.get('money') - self.cell_cost
-                self.squares[self.x][self.y].Change_Owner(Player_color)
-                self.own=Player_color
-                game.Update()
+            self.test = 0
+            if self.x!=8:
+                if self.squares[self.x+1][self.y].own==Player_color:
+                    self.test=1
+            if self.x!=0:
+                if self.squares[self.x-1][self.y].own==Player_color:
+                    self.test=1
+            if self.y!=0:
+                if self.squares[self.x][self.y-1].own==Player_color:
+                    self.test=1
+            if self.y!=8:
+                if self.squares[self.x][self.y+1].own==Player_color:
+                    self.test=1
+            if  self.test==1:
+                if self.res_player.get('money')>=self.cell_cost and self.own=='Black':
+                    self.res_player['money'] = self.res_player.get('money') - self.cell_cost
+                    self.squares[self.x][self.y].Change_Owner(Player_color)
+                    self.own=Player_color
+                    game.Update()
 
 
     def Buying_Building(self):

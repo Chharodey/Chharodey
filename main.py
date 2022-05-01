@@ -31,7 +31,7 @@ class Cell(tkinter.Button):
 class Playing_Field:
 
     window = tkinter.Tk()
-    window.geometry("505x500")
+    window.geometry("505x430")
 
 
     def __init__(self):
@@ -42,9 +42,11 @@ class Playing_Field:
         f.close()
         self.cell_cost = 'x'
         self.name = 'x'
-        self.res_yellow={'food':4,'wood':4, 'rock':0, 'money':6}
-        self.res_blue={'food':4,'wood':4, 'rock':0, 'money':6}
-        self.normal_price={'food':1,'wood':randint(2,3)}
+        self.res_yellow={'food':0, 'wood':4, 'clay':0, 'rock':0, 'ore':0, 'gold':0, 'gem':0,
+                         'plank':0, 'brick':0, 'metal':0, 'furniture':0, 'ceramic':0, 'statue':0, 'instrument':0, 'jewel':0, 'money':20}
+        self.res_blue={'food':0, 'wood':4, 'clay':0, 'rock':0, 'ore':0, 'gold':0, 'gem':0,
+                         'plank':0, 'brick':0, 'metal':0, 'furniture':0, 'ceramic':0, 'statue':0, 'instrument':0, 'jewel':0, 'money':20}
+        self.normal_price={'food':1, 'wood':2, 'clay':1, 'rock':2}
         self.squares=[]
         self.ROW=len(strings)
         self.COL=len(strings[1])-1
@@ -55,7 +57,7 @@ class Playing_Field:
                 difference=i-j
                 if difference<0:
                     difference = difference * -1
-                self.cell_cost = (self.COL-1)-difference
+                self.cell_cost = ((self.COL-1)-difference)*2
                 if strings[i][j] == 'F':
                     self.color = 'Olive'
                     self.food = randint(1, 3)
@@ -167,12 +169,19 @@ class Playing_Field:
     def Building_Pick(self, name):
         self.name = name
         building=all_building.get(name)
-        self.message = building[0]
-        self.coast_wood = building[1]
-        self.coast_rock = building[2]
-        self.coast_money = building[3]
-        self.l3.config(text=f"Название постройки\n{self.name}\n\nОписание\n{self.message}\n\n\n"
-                            f"Дерево = {self.coast_wood}, Камень = {self.coast_rock}\nМонеты = {self.coast_money}")
+        self.type_terrain=building[0]
+        self.read_terrain = ''
+        for i in self.type_terrain:
+            self.read_terrain+=i+'  '
+        self.message = building[1]
+        self.coast_wood = building[2]
+        self.coast_rock = building[3]
+        self.coast_plank = building[4]
+        self.coast_brick = building[5]
+        self.coast_instr = building[6]
+        self.coast_money = building[7]
+        self.l3.config(text=f"Название постройки\n{self.name}\n\nВозможная местность\n{self.read_terrain}\n\nОписание\n{self.message}\n\n\n"
+                            f"Дерево = {self.coast_wood}, Камень = {self.coast_rock}\nДоски = {self.coast_plank}, Кирпичи = {self.coast_brick}\nИнструменты = {self.coast_instr}\nМонеты = {self.coast_money}")
 
 
     def Field_Creation(self):
@@ -181,6 +190,7 @@ class Playing_Field:
         build_menu = tkinter.Menu(menu, tearoff=0)
         build_menu.add_command(label='Ферма', command = lambda: self.Building_Pick('Ферма'))
         build_menu.add_command(label='Домик лесоруба', command = lambda: self.Building_Pick('Домик лесоруба'))
+        build_menu.add_command(label='Карьер', command=lambda: self.Building_Pick('Карьер'))
 
         trade_menu = tkinter.Menu(menu, tearoff=0)
         trade_menu.add_command(label='Еда')
@@ -195,20 +205,23 @@ class Playing_Field:
         self.l1 = tkinter.Label(text="Координаты клетки x=x, y=y\nПрирост Еды = 0\nПрирост Дерева = 0\nПрирост Глины = 0\n"
                             "Прирост Камня = 0\nПрирост Руды = 0\nПрирост Золота = 0\nПрирост Самоцветов = 0\n"
                             "Местность = 0\nПостройка = 0\nХозяин = 0", font=FONT, bg=COLORS.get('Silver'), width=27, justify=tkinter.LEFT)
-        self.l2 = tkinter.Label(text="Стоимость клетки=x", font=FONT, bg=COLORS.get('Olive'))
-        self.l3 = tkinter.Label(text="Название постройки\nПусто\n\nОписание\nПусто\n\n\nДерево = x, Камень = x\n"
-                                     "Монеты = x", bg=COLORS.get('Aqua'), width=27, height=10, font=FONT)
-        self.l4 = tkinter.Label(text=f"Еда = {self.res_player.get('food')}, Дерево = {self.res_player.get('wood')}, Камень = {self.res_player.get('rock')}"
-                                   f", Монеты = {self.res_player.get('money')}", font=FONT, bg=COLORS.get('Grey'))
+        self.l2 = tkinter.Label(text="Стоимость клетки=x", font=FONT, width=19, bg=COLORS.get('Olive'))
+        self.l3 = tkinter.Label(text=f"Название постройки\nПусто\n\nВозможная местность\nПусто\n\nОписание\nПусто\n\n\n"
+                                     f"Дерево = х, Камень = х\nДоски = х, Кирпичи = х\nИнструменты = х\nМонеты = х", bg=COLORS.get('Aqua'), width=27, height=15, font=FONT)
+        self.l4 = tkinter.Label(text=f"Еда = {self.res_player.get('food')}, Дерево = {self.res_player.get('wood')}, Глина = {self.res_player.get('clay')}, Камень = {self.res_player.get('rock')}"
+                                   f", Руда = {self.res_player.get('ore')}, Золото = {self.res_player.get('gold')}\nСамоцветы = {self.res_player.get('gem')}, Доски = {self.res_player.get('plank')}"
+                                     f", Кирпичи = {self.res_player.get('brick')}, Металл = {self.res_player.get('metal')}, Мебель = {self.res_player.get('furniture')}\n"
+                                     f"Керамика = {self.res_player.get('ceramic')}, Статуи = {self.res_player.get('statue')}, Инструменты = {self.res_player.get('instrument')}, "
+                                     f"Драгоценности = {self.res_player.get('jewel')}\nМонеты = {self.res_player.get('money')}", width=56, font=FONT, bg=COLORS.get('Grey'))
 
 
         self.b1 = tkinter.Button(text='Купить', command=game.Buying_cell, font=FONT, bg=COLORS.get('Olive'))
-        self.b2 = tkinter.Button(text='Купить', command=game.Buying_Building, width=27, font=FONT, bg=COLORS.get('Brown'))
-        self.b1.place(x=460, y=111)
-        self.b2.place(x=342, y=345)
+        self.b2 = tkinter.Button(text='Купить', command=game.Buying_Building, width=27, height=3, font=FONT, bg=COLORS.get('Brown'))
+        self.b1.place(x=460, y=160)
+        self.b2.place(x=342, y=386)
         self.l1.place(x=342, y=1)
-        self.l2.place(x=342, y=112)
-        self.l3.place(x=342, y=200)
+        self.l2.place(x=342, y=161)
+        self.l3.place(x=342, y=180)
         self.l4.place(x=0, y=369)
 
 
@@ -217,8 +230,11 @@ class Playing_Field:
                             f"Прирост Глины = {self.clay}\nПрирост Камня = {self.rock}\nПрирост Руды = {self.ore}\nПрирост Золота = {self.gold}\n"
                             f"Прирост Самоцветов = {self.gem}\nМестность = {self.terrain}\nПостройка = {self.building}\nХозяин = {self.own}")
         self.l2.config(text=f"Стоимость клетки={self.cell_cost}")
-        self.l4.config(text=f"Еда = {self.res_player.get('food')}, Дерево = {self.res_player.get('wood')}, Камень = {self.res_player.get('rock')}"
-                                   f", Монеты = {self.res_player.get('money')}")
+        self.l4.config(text=f"Еда = {self.res_player.get('food')}, Дерево = {self.res_player.get('wood')}, Глина = {self.res_player.get('clay')}, Камень = {self.res_player.get('rock')}"
+                            f", Руда = {self.res_player.get('ore')}, Золото = {self.res_player.get('gold')}\nСамоцветы = {self.res_player.get('gem')}, Доски = {self.res_player.get('plank')}"
+                            f", Кирпичи = {self.res_player.get('brick')}, Металл = {self.res_player.get('metal')}, Мебель = {self.res_player.get('furniture')}\n"
+                            f"Керамика = {self.res_player.get('ceramic')}, Статуи = {self.res_player.get('statue')}, Инструменты = {self.res_player.get('instrument')}, "
+                            f"Драгоценности = {self.res_player.get('jewel')}\nМонеты = {self.res_player.get('money')}")
 
 
     def Buying_cell(self):
@@ -232,7 +248,8 @@ class Playing_Field:
 
     def Buying_Building(self):
         if self.name!='x':
-            if self.own==Player_color and self.building=='Пусто' and self.res_player.get('wood')>=self.coast_wood and self.res_player.get('money') >= self.coast_money and self.res_player.get('rock')>=self.coast_rock:
+            if self.own==Player_color and self.building == 'Пусто' and self.res_player.get('wood') >= self.coast_wood and self.res_player.get('money') >= self.coast_money and self.res_player.get('rock') >= self.coast_rock\
+                    and self.res_player.get('plank') >= self.coast_plank and self.res_player.get('brick') >= self.coast_brick and self.res_player.get('instrument') >= self.coast_instr:
                 self.res_player['wood'] = self.res_player.get('wood') - self.coast_wood
                 self.res_player['rock'] = self.res_player.get('rock') - self.coast_rock
                 self.res_player['money'] = self.res_player.get('money') - self.coast_money

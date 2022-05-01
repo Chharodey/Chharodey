@@ -224,6 +224,7 @@ class Playing_Field:
         build_menu.add_cascade(label='Базовая обработка', menu=build_menu3)
         build_menu.add_cascade(label='Продвинутая обработка', menu=build_menu4)
         build_menu.add_cascade(label='Крепость', menu=build_menu5)
+        build_menu.add_command(label='Снести здание', command=game.Break_Building)
 
         trade_menu = tkinter.Menu(menu, tearoff=0)
         trade_menu.add_command(label='Еда')
@@ -242,10 +243,10 @@ class Playing_Field:
         self.l3 = tkinter.Label(text=f"Название постройки\nПусто\n\nВозможная местность\nПусто\n\nОписание\nПусто\n\n"
                                      f"Дерево = х, Камень = х\nДоски = х, Кирпичи = х\nИнструменты = х\nМонеты = х", bg=COLORS.get('Aqua'), width=27, height=15, font=FONT)
         self.l4 = tkinter.Label(text=f"Еда = {self.res_player.get('food')}, Дерево = {self.res_player.get('wood')}, Глина = {self.res_player.get('clay')}, Камень = {self.res_player.get('rock')}"
-                                   f", Руда = {self.res_player.get('ore')}, Золото = {self.res_player.get('gold')}\nСамоцветы = {self.res_player.get('gem')}, Доски = {self.res_player.get('plank')}"
-                                     f", Кирпичи = {self.res_player.get('brick')}, Металл = {self.res_player.get('metal')}, Мебель = {self.res_player.get('furniture')}\n"
-                                     f"Керамика = {self.res_player.get('ceramic')}, Статуи = {self.res_player.get('statue')}, Инструменты = {self.res_player.get('instrument')}, "
-                                     f"Драгоценности = {self.res_player.get('jewel')}\nМонеты = {self.res_player.get('money')}", width=56, font=FONT, bg=COLORS.get('Grey'))
+                                   f", Руда = {self.res_player.get('ore')}\nЗолото = {self.res_player.get('gold')}, Самоцветы = {self.res_player.get('gem')}, Доски = {self.res_player.get('plank')}"
+                                     f", Кирпичи = {self.res_player.get('brick')}\nМеталл = {self.res_player.get('metal')}, Мебель = {self.res_player.get('furniture')}, "
+                                     f"Керамика = {self.res_player.get('ceramic')}, Статуи = {self.res_player.get('statue')}\nИнструменты = {self.res_player.get('instrument')}, "
+                                     f"Драгоценности = {self.res_player.get('jewel')}, Монеты = {self.res_player.get('money')}", width=56, font=FONT, bg=COLORS.get('Grey'))
 
 
         self.b1 = tkinter.Button(text='Купить', command=game.Buying_cell, font=FONT, bg=COLORS.get('Olive'))
@@ -264,10 +265,10 @@ class Playing_Field:
                             f"Прирост Самоцветов = {self.gem}\nМестность = {self.terrain}\nПостройка = {self.building}\nХозяин = {self.own}")
         self.l2.config(text=f"Стоимость клетки={self.cell_cost}")
         self.l4.config(text=f"Еда = {self.res_player.get('food')}, Дерево = {self.res_player.get('wood')}, Глина = {self.res_player.get('clay')}, Камень = {self.res_player.get('rock')}"
-                            f", Руда = {self.res_player.get('ore')}, Золото = {self.res_player.get('gold')}\nСамоцветы = {self.res_player.get('gem')}, Доски = {self.res_player.get('plank')}"
-                            f", Кирпичи = {self.res_player.get('brick')}, Металл = {self.res_player.get('metal')}, Мебель = {self.res_player.get('furniture')}\n"
-                            f"Керамика = {self.res_player.get('ceramic')}, Статуи = {self.res_player.get('statue')}, Инструменты = {self.res_player.get('instrument')}, "
-                            f"Драгоценности = {self.res_player.get('jewel')}\nМонеты = {self.res_player.get('money')}")
+                            f", Руда = {self.res_player.get('ore')}\nЗолото = {self.res_player.get('gold')}, Самоцветы = {self.res_player.get('gem')}, Доски = {self.res_player.get('plank')}"
+                            f", Кирпичи = {self.res_player.get('brick')}\nМеталл = {self.res_player.get('metal')}, Мебель = {self.res_player.get('furniture')}, "
+                            f"Керамика = {self.res_player.get('ceramic')}, Статуи = {self.res_player.get('statue')}\nИнструменты = {self.res_player.get('instrument')}, "
+                            f"Драгоценности = {self.res_player.get('jewel')}, Монеты = {self.res_player.get('money')}")
 
 
     def Buying_cell(self):
@@ -285,10 +286,29 @@ class Playing_Field:
                     and self.res_player.get('plank') >= self.coast_plank and self.res_player.get('brick') >= self.coast_brick and self.res_player.get('instrument') >= self.coast_instr and self.terrain in self.type_terrain:
                 self.res_player['wood'] = self.res_player.get('wood') - self.coast_wood
                 self.res_player['rock'] = self.res_player.get('rock') - self.coast_rock
+                self.res_player['plank'] = self.res_player.get('plank') - self.coast_plank
+                self.res_player['brick'] = self.res_player.get('brick') - self.coast_brick
+                self.res_player['instrument'] = self.res_player.get('instrument') - self.coast_instr
                 self.res_player['money'] = self.res_player.get('money') - self.coast_money
                 self.squares[self.x][self.y].Change_Building(self.name)
                 self.building = self.name
                 game.Update()
+
+
+    def Break_Building(self):
+        if self.own==Player_color and self.building != 'Пусто':
+            building = all_building.get(self.building)
+            self.res_player['wood'] += building[2]/2
+            self.res_player['rock'] += building[3]/2
+            self.res_player['plank'] += building[4]/2
+            self.res_player['brick'] += building[5]/2
+            self.res_player['instrument'] += building[6]/2
+            self.res_player['money'] += building[7]/2
+
+
+            self.squares[self.x][self.y].Change_Building('Пусто')
+            self.building = 'Пусто'
+            game.Update()
 
 
     def Trade(self):

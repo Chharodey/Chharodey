@@ -31,6 +31,7 @@ class Cell(tkinter.Button):
 class Playing_Field:
 
     window = tkinter.Tk()
+    window.title('Сидачев, Проект - Игра')
     window.geometry("505x430")
 
 
@@ -128,6 +129,7 @@ class Playing_Field:
                 sqr.config(command=lambda button = sqr: self.clicking_on_square(button))
                 line.append(sqr)
             self.squares.append(line)
+        self.Start()
 
 
     def clicking_on_square(self, pressed_square):
@@ -253,16 +255,19 @@ class Playing_Field:
                                      f", Кирпичи = {self.res_player.get('brick')}\nМеталл = {self.res_player.get('metal')}, Мебель = {self.res_player.get('furniture')}, "
                                      f"Керамика = {self.res_player.get('ceramic')}, Статуи = {self.res_player.get('statue')}\nИнструменты = {self.res_player.get('instrument')}, "
                                      f"Драгоценности = {self.res_player.get('jewel')}, Монеты = {self.res_player.get('money')}", width=56, font=FONT, bg=COLORS.get('Grey'))
+        self.l5 = tkinter.Label(text=f'Ход {COLORS_READ.get(self.Player_color)}, Раунд {self.number_round}', width=27,
+                                fg=COLORS.get('White'), bg = COLORS.get(self.Player_color))
 
 
         self.b1 = tkinter.Button(text='Купить', command=self.Buying_cell, font=FONT, bg=COLORS.get('Olive'))
-        self.b2 = tkinter.Button(text='Купить', command=self.Buying_Building, width=27, height=3, font=FONT, bg=COLORS.get('Brown'))
+        self.b2 = tkinter.Button(text='Купить', command=self.Buying_Building, width=27, height=1, font=FONT, bg=COLORS.get('Brown'))
         self.b1.place(x=460, y=160)
         self.b2.place(x=342, y=386)
         self.l1.place(x=342, y=1)
         self.l2.place(x=342, y=161)
         self.l3.place(x=342, y=180)
         self.l4.place(x=0, y=369)
+        self.l5.place(x=342, y=410)
 
 
     def Update(self):
@@ -280,6 +285,8 @@ class Playing_Field:
                  f", Кирпичи = {self.res_player.get('brick')}\nМеталл = {self.res_player.get('metal')}, Мебель = {self.res_player.get('furniture')}, "
                  f"Керамика = {self.res_player.get('ceramic')}, Статуи = {self.res_player.get('statue')}\nИнструменты = {self.res_player.get('instrument')}, "
                  f"Драгоценности = {self.res_player.get('jewel')}, Монеты = {self.res_player.get('money')}")
+        self.l5.config(text=f'Ход {COLORS_READ.get(self.Player_color)}, Раунд {self.number_round}',
+                       bg=COLORS.get(self.Player_color))
 
 
     def Buying_cell(self):
@@ -455,11 +462,11 @@ class Playing_Field:
             self.res_player['money']=0
 
 
-
     def Basic_Recycling(self, res1, res3, coefficient1):
         while (self.res_player.get(res1)>= coefficient1) and (self.new_res.get(res3)>0):
             self.res_player[res1] -= coefficient1
             self.res_player[res3] += 1
+
 
     def Advanced_Recycling(self, res1, res2, res3, coefficient1, coefficient2):
         while (self.res_player.get(res1) >= coefficient1) and (self.new_res.get(res3) > 0)\
@@ -467,7 +474,6 @@ class Playing_Field:
             self.res_player[res1] -= coefficient1
             self.res_player[res2] -= coefficient2
             self.res_player[res3] += 1
-
 
 
     def Start(self):
@@ -478,4 +484,3 @@ class Playing_Field:
 
 
 game = Playing_Field()
-game.Start()

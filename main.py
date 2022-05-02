@@ -42,7 +42,7 @@ class Playing_Field:
         f.close()
         self.cell_cost = 'x'
         self.name = 'x'
-        self.res_yellow={'food':0, 'wood':4, 'clay':0, 'rock':0, 'ore':0, 'gold':0, 'gem':0,
+        self.res_scarlet={'food':0, 'wood':4, 'clay':0, 'rock':0, 'ore':0, 'gold':0, 'gem':0,
                          'plank':0, 'brick':0, 'metal':0, 'furniture':0, 'ceramic':0, 'statue':0, 'instrument':0, 'jewel':0, 'money':20}
         self.res_blue={'food':0, 'wood':4, 'clay':0, 'rock':0, 'ore':0, 'gold':0, 'gem':0,
                          'plank':0, 'brick':0, 'metal':0, 'furniture':0, 'ceramic':0, 'statue':0, 'instrument':0, 'jewel':0, 'money':20}
@@ -53,11 +53,12 @@ class Playing_Field:
         for i in range(self.ROW):
             line=[]
             for j in range(self.COL):
-                self.own = 'Black'
+                self.fg = 'White'
+                self.own = 'White'
                 difference=i-j
                 if difference<0:
                     difference = difference * -1
-                self.cell_cost = ((self.COL-1)-difference)*2
+                self.cell_cost = ((self.COL-1)-difference)
                 if strings[i][j] == 'F':
                     self.color = 'Olive'
                     self.food = randint(1, 3)
@@ -128,7 +129,7 @@ class Playing_Field:
                     else:
                         self.gem = 0
                     self.terrain = 'Река'
-                elif (strings[i][j] == 'Y') or (strings[i][j] == 'B'):
+                elif (strings[i][j] == 'S') or (strings[i][j] == 'B'):
                     self.color = 'Silver'
                     self.food = 0
                     self.wood = 0
@@ -138,12 +139,14 @@ class Playing_Field:
                     self.gold = 0
                     self.gem = 0
                     self.terrain = 'Крепость'
-                    if strings[i][j] == 'Y':
-                        self.own = 'Yellow'
+                    if strings[i][j] == 'S':
+                        self.own = 'Scarlet'
+                        self.fg = 'Scarlet'
                     else:
                         self.own = 'Blue'
+                        self.fg = 'Blue'
 
-                sqr=Cell(Playing_Field.window, i, j, self.food, self.wood, self.clay, self.rock, self.ore, self.gold, self.gem, self.terrain, self.own, self.cell_cost, width=4, height=2, bg=COLORS.get(f'{self.color}'))
+                sqr=Cell(Playing_Field.window, i, j, self.food, self.wood, self.clay, self.rock, self.ore, self.gold, self.gem, self.terrain, self.own, self.cell_cost, text='*', width=4, height=2, fg=COLORS.get(f'{self.fg}'), bg=COLORS.get(f'{self.color}'))
                 sqr.config(command=lambda button = sqr: self.clicking_on_square(button))
                 line.append(sqr)
             self.squares.append(line)
@@ -229,7 +232,6 @@ class Playing_Field:
         trade_menu = tkinter.Menu(menu, tearoff=0)
 
         trade_menu1 = tkinter.Menu(menu, tearoff=0)
-        trade_menu1.add_command(label='Еда (1)', command=lambda: game.Trade('Buy', 'food', 1))
         trade_menu1.add_command(label='Дерево (2)', command=lambda: game.Trade('Buy', 'wood', 2))
         trade_menu1.add_command(label='Камень (2)', command=lambda: game.Trade('Buy', 'rock', 2))
         trade_menu1.add_command(label='Доски (3)', command=lambda: game.Trade('Buy', 'plank', 3))
@@ -237,6 +239,7 @@ class Playing_Field:
         trade_menu1.add_command(label='Инструменты (5)', command=lambda: game.Trade('Buy', 'instrument', 5))
 
         trade_menu2 = tkinter.Menu(menu, tearoff=0)
+        trade_menu2.add_command(label='Еда (1)', command=lambda: game.Trade('Sell', 'food', 1))
         trade_menu2.add_command(label='Дерево (1)', command=lambda: game.Trade('Sell', 'wood', 1))
         trade_menu2.add_command(label='Камень (1)', command=lambda: game.Trade('Sell', 'rock', 1))
         trade_menu2.add_command(label='Самоцветы (3)', command=lambda: game.Trade('Sell', 'gem', 3))
@@ -286,7 +289,7 @@ class Playing_Field:
     def Update(self):
         self.l1.config(text=f"Координаты клетки x={self.x}, y={self.y}\nПрирост Еды = {self.food}\nПрирост Дерева = {self.wood}\n"
                             f"Прирост Глины = {self.clay}\nПрирост Камня = {self.rock}\nПрирост Руды = {self.ore}\nПрирост Золота = {self.gold}\n"
-                            f"Прирост Самоцветов = {self.gem}\nМестность = {self.terrain}\nПостройка = {self.building}\nХозяин = {self.own}")
+                            f"Прирост Самоцветов = {self.gem}\nМестность = {self.terrain}\nПостройка = {self.building}\nХозяин = {COLORS_READ.get(self.own)}")
         self.l2.config(text=f"Стоимость клетки={self.cell_cost}")
         self.l4.config(text=f"Еда = {self.res_player.get('food')}, Дерево = {self.res_player.get('wood')}, Глина = {self.res_player.get('clay')}, Камень = {self.res_player.get('rock')}"
                             f", Руда = {self.res_player.get('ore')}\nЗолото = {self.res_player.get('gold')}, Самоцветы = {self.res_player.get('gem')}, Доски = {self.res_player.get('plank')}"
@@ -311,10 +314,11 @@ class Playing_Field:
                 if self.squares[self.x][self.y+1].own==Player_color:
                     self.test=1
             if  self.test==1:
-                if self.res_player.get('money')>=self.cell_cost and self.own=='Black':
+                if self.res_player.get('money')>=self.cell_cost and self.own=='White':
                     self.res_player['money'] = self.res_player.get('money') - self.cell_cost
                     self.squares[self.x][self.y].Change_Owner(Player_color)
                     self.own=Player_color
+                    self.squares[self.x][self.y].config(fg = COLORS.get(f'{Player_color}'))
                     game.Update()
 
 
@@ -364,15 +368,23 @@ class Playing_Field:
                      f"Драгоценности = {self.res_player.get('jewel')}, Монеты = {self.res_player.get('money')}")
 
 
+    #def End_Turn(self):
+
+
+
+    #def End_Round(self):
+
+
     def Start(self):
-        if Player_color=="Yellow":
-            self.res_player=self.res_yellow
+        if Player_color == 'Scarlet':
+            self.res_player = self.res_scarlet
         else:
             self.res_player = self.res_blue
         game.Field_Creation()
         Playing_Field.window.mainloop()
 
 
-Player_color='Yellow'
+Player_color='Scarlet'
+#Player_color='Blue'
 game = Playing_Field()
 game.Start()

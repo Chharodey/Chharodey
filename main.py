@@ -47,7 +47,7 @@ class Playing_Field:
         self.cell_cost = 'x'
         self.name = 'x'
         self.res_scarlet={'food':0, 'wood':4, 'clay':0, 'rock':0, 'ore':0, 'gold':0, 'gem':0,
-                         'plank':0, 'brick':0, 'metal':0, 'furniture':0, 'ceramic':0, 'statue':0, 'instrument':0, 'jewel':0, 'money':1000}
+                         'plank':0, 'brick':0, 'metal':0, 'furniture':0, 'ceramic':0, 'statue':0, 'instrument':0, 'jewel':0, 'money':20}
         self.res_blue={'food':0, 'wood':4, 'clay':0, 'rock':0, 'ore':0, 'gold':0, 'gem':0,
                          'plank':0, 'brick':0, 'metal':0, 'furniture':0, 'ceramic':0, 'statue':0, 'instrument':0, 'jewel':0, 'money':20}
         self.squares=[]
@@ -201,6 +201,8 @@ class Playing_Field:
 
         build_menu5 = tkinter.Menu(menu, tearoff=0)
         build_menu5.add_command(label='Банк', command=lambda: self.Building_Pick('Банк'))
+        build_menu5.add_command(label='Архитектор', command=lambda: self.Building_Pick('Архитектор'))
+        build_menu5.add_command(label='Коллекционер', command=lambda: self.Building_Pick('Коллекционер'))
 
         build_menu.add_cascade(label='Базовая добыча', menu=build_menu1)
         build_menu.add_cascade(label='Продвинутая добыча', menu=build_menu2)
@@ -375,11 +377,67 @@ class Playing_Field:
 
 
     def End_Round(self):
-        self.number_round+=1
-        self.number_turn=1
+        self.number_round += 1
+        self.number_turn = 1
+        self.fortress_build = {'Scarlet':'0', 'Blue':'0'}
+        self.number_adv_build = {'Scarlet':0, 'Blue':0}
 
         if self.number_round == 13:
-            print('Game over')
+            for i in range(self.ROW):
+                for j in range(self.COL):
+                    if self.squares[i][j].own != 'White':
+                        Build = self.squares[i][j].building
+                        if Build in ['Ферма', 'Лесоруб', 'Карьер', 'Шахта', 'Рыбак', 'Ловцы жемчуга', 'Столяр', 'Печь для обжига', 'Плавильня', 'Монетный двор']:
+                            self.PO[self.squares[i][j].own] += 1
+                        if Build in ['Мельница', 'Лесопилка', 'Каменоломня', 'Прииск', 'Мебельщик', 'Гончар', 'Скульптор', 'Кузница', 'Ювелир']:
+                            self.PO[self.squares[i][j].own] += 2
+                            self.number_adv_build[self.squares[i][j].own] += 1
+                        if Build in ['Банк', 'Коллекционер', 'Архитектор']:
+                            self.fortress_build[self.squares[i][j].own] = Build
+
+            if self.fortress_build.get('Scarlet') == 'Банк':
+                self.PO['Scarlet'] += self.res_scarlet.get('money') // 4
+            else:
+                self.PO['Scarlet'] += self.res_scarlet.get('money') // 5
+            if self.fortress_build.get('Blue') == 'Банк':
+                self.PO['Blue'] += self.res_blue.get('money') // 4
+            else:
+                self.PO['Blue'] += self.res_blue.get('money') // 5
+
+            if self.fortress_build.get('Scarlet') == 'Коллекционер':
+                while (self.res_scarlet.get('furniture') > 0) and (self.res_scarlet.get('ceramic') > 0) and (self.res_scarlet.get('statue') > 0):
+                    self.res_scarlet['furniture'] -= 1
+                    self.res_scarlet['ceramic'] -= 1
+                    self.res_scarlet['statue'] -= 1
+                    self.PO['Scarlet']+=4
+            self.PO['Scarlet'] += self.res_scarlet.get('furniture') + self.res_scarlet.get('ceramic') * 0.5 + self.res_scarlet.get('statue')*1.5
+
+            if self.fortress_build.get('Blue') == 'Коллекционер':
+                while (self.res_blue.get('furniture') > 0) and (self.res_blue.get('ceramic') > 0) and (self.res_blue.get('statue') > 0):
+                    self.res_blue['furniture'] -= 1
+                    self.res_blue['ceramic'] -= 1
+                    self.res_blue['statue'] -= 1
+                    self.PO['Blue'] += 4
+            self.PO['Blue'] += self.res_blue.get('furniture') + self.res_blue.get('ceramic') * 0.5 + self.res_blue.get('statue') * 1.5
+
+            if self.fortress_build.get('Scarlet') == 'Архитектор' and self.number_adv_build.get('Scarlet') > self.number_adv_build.get('Blue'):
+                self.PO['Scarlet'] += self.number_adv_build.get('Scarlet')
+            elif self.fortress_build.get('Blue') == 'Архитектор' and self.number_adv_build.get('Blue') > self.number_adv_build.get('Scarlet'):
+                self.PO['Scarlet'] += self.number_adv_build.get('Blue')
+
+            win_win = tkinter.Toplevel(self.window)
+            PO_Scarlet=self.PO.get('Scarlet')
+            PO_Blue=self.PO.get('Blue')
+            if PO_Scarlet > PO_Blue:
+                tkinter.Label(win_win, text='Победа за Алым', bg = COLORS.get('S_field')).grid(row=0, column=0, columnspan=2, sticky='N'+'S'+'W'+'E')
+            elif PO_Scarlet < PO_Blue:
+                tkinter.Label(win_win, text='Победа за Синим', bg = COLORS.get('B_field')).grid(row=0, column=0, columnspan=2, sticky='N'+'S'+'W'+'E')
+            else:
+                tkinter.Label(win_win, text='Ничья', bg = COLORS.get('White')).grid(row=0, column=0, columnspan=2, sticky='N'+'S'+'W'+'E')
+
+            tkinter.Label(win_win, text=f'ПО Алого = {PO_Scarlet}', fg=COLORS.get('White'), bg = COLORS.get('Scarlet')).grid(row=1, column=0)
+            tkinter.Label(win_win, text=f'ПО Синего = {PO_Blue}', fg=COLORS.get('White'), bg = COLORS.get('Blue')).grid(row=1, column=1)
+            tkinter.Button(win_win, text='Завершить игру', command=self.window.destroy, bg = COLORS.get('Brown')).grid(row=2, column=0, columnspan=2, sticky='N'+'S'+'W'+'E')
 
 
     def Production(self):
@@ -453,13 +511,13 @@ class Playing_Field:
             self.res_player['gold'] -= 1
             self.res_player['money'] += 4
 
-        if self.res_player.get('food')<0:
-            self.PO[self.Player_color]+=self.res_player.get('food')
-            self.res_player['food']=0
+        if self.res_player.get('food') < 0:
+            self.PO[self.Player_color] += self.res_player.get('food')
+            self.res_player['food'] = 0
 
-        if self.res_player.get('money')<0:
-            self.PO[self.Player_color]+=self.res_player.get('money')
-            self.res_player['money']=0
+        if self.res_player.get('money') < 0:
+            self.PO[self.Player_color] += self.res_player.get('money')
+            self.res_player['money'] = 0
 
 
     def Basic_Recycling(self, res1, res3, coefficient1):

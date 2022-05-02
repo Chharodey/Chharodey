@@ -47,9 +47,9 @@ class Playing_Field:
         self.cell_cost = 'x'
         self.name = 'x'
         self.res_scarlet={'food':0, 'wood':4, 'clay':0, 'rock':0, 'ore':0, 'gold':0, 'gem':0,
-                         'plank':0, 'brick':0, 'metal':0, 'furniture':0, 'ceramic':0, 'statue':0, 'instrument':0, 'jewel':0, 'money':20}
+                         'plank':0, 'brick':0, 'metal':0, 'furniture':0, 'ceramic':0, 'statue':0, 'instrument':0, 'jewel':0, 'money':10}
         self.res_blue={'food':0, 'wood':4, 'clay':0, 'rock':0, 'ore':0, 'gold':0, 'gem':0,
-                         'plank':0, 'brick':0, 'metal':0, 'furniture':0, 'ceramic':0, 'statue':0, 'instrument':0, 'jewel':0, 'money':20}
+                         'plank':0, 'brick':0, 'metal':0, 'furniture':0, 'ceramic':0, 'statue':0, 'instrument':0, 'jewel':0, 'money':10}
         self.squares=[]
         self.ROW=len(strings)
         self.COL=len(strings[1])-1

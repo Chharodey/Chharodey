@@ -6,6 +6,7 @@ from constants import *
 class Cell(tkinter.Button):
 
     def __init__(self, master, x, y, food, wood, clay, rock, ore, gold, gem, terrain, own, cell_cost, *args, **kwargs):
+        #Создание кнопки - ячейки, унаследованной от класса Button в tkinter
         super(Cell, self).__init__(master, *args, **kwargs)
         self.x = x
         self.y = y
@@ -22,9 +23,11 @@ class Cell(tkinter.Button):
         self.own = own
 
     def Change_Owner(self, Color):
+        #Смена характеристики принадлежности в ячейке
         self.own=Color
 
     def Change_Building(self, building):
+        # Смена характеристики постройки в ячейке
         self.building=building
 
 
@@ -36,25 +39,25 @@ class Playing_Field:
 
 
     def __init__(self):
-        #fail=input('Введите название файла шаблона (Без приписки txt)')
+        #Считывается Файл-шаблон, а также создаются необходимые в будущем переменные
         f = open('Template 1.txt')
-        #f = open(f'{fail}.txt')
-        strings=f.readlines()
+        strings = f.readlines()
         f.close()
         self.number_turn = 1
         self.number_round = 1
         self.PO = {'Scarlet':0, 'Blue':0}
         self.cell_cost = 'x'
         self.name = 'x'
-        self.res_scarlet={'food':0, 'wood':4, 'clay':0, 'rock':0, 'ore':0, 'gold':0, 'gem':0,
+        self.res_scarlet = {'food':0, 'wood':4, 'clay':0, 'rock':0, 'ore':0, 'gold':0, 'gem':0,
                          'plank':0, 'brick':0, 'metal':0, 'furniture':0, 'ceramic':0, 'statue':0, 'instrument':0, 'jewel':0, 'money':10}
-        self.res_blue={'food':0, 'wood':4, 'clay':0, 'rock':0, 'ore':0, 'gold':0, 'gem':0,
+        self.res_blue = {'food':0, 'wood':4, 'clay':0, 'rock':0, 'ore':0, 'gold':0, 'gem':0,
                          'plank':0, 'brick':0, 'metal':0, 'furniture':0, 'ceramic':0, 'statue':0, 'instrument':0, 'jewel':0, 'money':10}
-        self.squares=[]
-        self.ROW=len(strings)
-        self.COL=len(strings[1])-1
+        self.squares = []
+        self.ROW = len(strings)
+        self.COL = len(strings[1])-1
         for i in range(self.ROW):
-            line=[]
+            #Список line является строкой матрицы, набираемой из клеток-кнопок, при помощи цикла
+            line = []
             for j in range(self.COL):
                 self.fg = 'White'
                 self.own = 'White'
@@ -65,8 +68,10 @@ class Playing_Field:
                 self.ore = 0
                 self.gold = 0
                 self.gem = 0
+                #Цена клеттки выстраивается в зависимости от приближенности к главной диагонали матрицы
                 difference = abs(i-j)
                 self.cell_cost = ((self.COL-1)-difference)
+                #Характеристики клетки зависят от соответствующей буквы в шаблоне и рандома
                 if strings[i][j] == 'F':
                     self.color = 'Olive'
                     self.food = randint(1, 3)
@@ -125,6 +130,7 @@ class Playing_Field:
                         self.own = 'Blue'
                         self.fg = 'Blue'
 
+                #sqr - конкретная кнопка добавляющаяся в матрицу, squares - матрица со всеми кнопками
                 sqr=Cell(Playing_Field.window, i, j, self.food, self.wood, self.clay, self.rock, self.ore, self.gold, self.gem, self.terrain, self.own, self.cell_cost, text='*', width=4, height=2, fg=COLORS.get(f'{self.fg}'), bg=COLORS.get(f'{self.color}'))
                 sqr.config(command=lambda button = sqr: self.clicking_on_square(button))
                 line.append(sqr)
@@ -133,6 +139,7 @@ class Playing_Field:
 
 
     def clicking_on_square(self, pressed_square):
+        #Переносим информацию о нажатой кнопке во всю программу и обновляем поля с информацией
         self.food = pressed_square.food
         self.wood = pressed_square.wood
         self.clay = pressed_square.clay
@@ -150,6 +157,7 @@ class Playing_Field:
 
 
     def Building_Pick(self, name):
+        #Достаем из словаря данные о конкретно выбранной по имени постройке
         self.name = name
         building=all_building.get(name)
         self.type_terrain=building[0]
@@ -168,6 +176,7 @@ class Playing_Field:
 
 
     def Field_Creation(self):
+        #Создаем многоступенчатое меню игры, для строительства и торговли
         menu = tkinter.Menu(self.window)
         self.window.config(menu=menu)
         build_menu = tkinter.Menu(menu, tearoff=0)
@@ -241,11 +250,12 @@ class Playing_Field:
         menu.add_cascade(label='Торговля', menu=trade_menu)
         menu.add_command(label='Закончить ход', command=self.End_Turn)
 
-
+        #Добавляем на поле матрицу кнопок
         for i in range(self.ROW):
             for j in range(self.COL):
                 sqr=self.squares[i][j]
                 sqr.grid(row=i, column=j)
+        #Добавляем на поле информационные надписи и нажимаемые кнопки
         self.l1 = tkinter.Label(text="Координаты клетки x=x, y=y\nПрирост Еды = 0\nПрирост Дерева = 0\nПрирост Глины = 0\n"
                             "Прирост Камня = 0\nПрирост Руды = 0\nПрирост Золота = 0\nПрирост Самоцветов = 0\n"
                             "Местность = 0\nПостройка = 0\nХозяин = 0", font=FONT, bg=COLORS.get('Silver'), width=27, justify=tkinter.LEFT)
@@ -273,6 +283,7 @@ class Playing_Field:
 
 
     def Update(self):
+        #Обновляем информацию на поле
         self.l1.config(text=f"Координаты клетки x={self.x}, y={self.y}\nПрирост Еды = {self.food}\nПрирост Дерева = {self.wood}\n"
                             f"Прирост Глины = {self.clay}\nПрирост Камня = {self.rock}\nПрирост Руды = {self.ore}\nПрирост Золота = {self.gold}\n"
                             f"Прирост Самоцветов = {self.gem}\nМестность = {self.terrain}\nПостройка = {self.building}\nХозяин = {COLORS_READ.get(self.own)}")
@@ -281,6 +292,7 @@ class Playing_Field:
 
 
     def Update_res(self):
+        # Обновляем информацию конкретно об игроке
         self.l4.config(
             text=f"Еда = {self.res_player.get('food')}, Дерево = {self.res_player.get('wood')}, Глина = {self.res_player.get('clay')}, Камень = {self.res_player.get('rock')}"
                  f", Руда = {self.res_player.get('ore')}\nЗолото = {self.res_player.get('gold')}, Самоцветы = {self.res_player.get('gem')}, Доски = {self.res_player.get('plank')}"
@@ -292,6 +304,7 @@ class Playing_Field:
 
 
     def Buying_cell(self):
+        #Добавляем условие необходимости по соседству своей клетки, а также позволяем купить подходящую клетку, если хватает монет
         if self.cell_cost != 'x':
             self.test = 0
             if self.x!=8:
@@ -316,6 +329,7 @@ class Playing_Field:
 
 
     def Buying_Building(self):
+        #Строим постройку, если ресурсов хватает и все условия соблюдены
         if self.name!='x':
             if self.own==self.Player_color and self.building == 'Пусто' and self.res_player.get('wood') >= self.coast_wood and self.res_player.get('money') >= self.coast_money and self.res_player.get('rock') >= self.coast_rock\
                     and self.res_player.get('plank') >= self.coast_plank and self.res_player.get('brick') >= self.coast_brick and self.res_player.get('instrument') >= self.coast_instr and self.terrain in self.type_terrain:
@@ -331,6 +345,7 @@ class Playing_Field:
 
 
     def Break_Building(self):
+        #Разрушаем собственное здание, возвращая половину потраченных ресурсов
         if self.own==self.Player_color and self.building != 'Пусто':
             building = all_building.get(self.building)
             self.res_player['wood'] += building[2]/2
@@ -347,6 +362,7 @@ class Playing_Field:
 
 
     def Trade(self, operation, res, price):
+        #Даем возможность как купить, так и продать ресурс, в зависимости от ключевого слова
         if operation == 'Buy' and self.res_player.get('money') >= price:
             self.res_player[res] += 1
             self.res_player['money'] -= price
@@ -357,6 +373,7 @@ class Playing_Field:
 
 
     def End_Turn(self):
+        #Производим ресурсы, меняем действующего игрока, при необходимости начинаем новый раунд
         self.number_turn+=1
         self.Production()
         if self.Player_color=='Scarlet':
@@ -379,10 +396,12 @@ class Playing_Field:
     def End_Round(self):
         self.number_round += 1
         self.number_turn = 1
-        self.fortress_build = {'Scarlet':'0', 'Blue':'0'}
-        self.number_adv_build = {'Scarlet':0, 'Blue':0}
 
+        #Подсчитываем победные очки в конче игры
         if self.number_round == 13:
+            self.fortress_build = {'Scarlet': '0', 'Blue': '0'}
+            self.number_adv_build = {'Scarlet': 0, 'Blue': 0}
+            #Прибавляем по 1 ПО за обычное здание и 2 за продвинутое
             for i in range(self.ROW):
                 for j in range(self.COL):
                     if self.squares[i][j].own != 'White':
@@ -395,6 +414,7 @@ class Playing_Field:
                         if Build in ['Банк', 'Коллекционер', 'Архитектор']:
                             self.fortress_build[self.squares[i][j].own] = Build
 
+            #Добавляем ПО за монеты, больше при наличии у игрока Банка
             if self.fortress_build.get('Scarlet') == 'Банк':
                 self.PO['Scarlet'] += self.res_scarlet.get('money') // 4
             else:
@@ -404,13 +424,15 @@ class Playing_Field:
             else:
                 self.PO['Blue'] += self.res_blue.get('money') // 5
 
+            # Добавляем ПО за ценности, больше при наличии у игрока Коллекционера
             if self.fortress_build.get('Scarlet') == 'Коллекционер':
                 while (self.res_scarlet.get('furniture') > 0) and (self.res_scarlet.get('ceramic') > 0) and (self.res_scarlet.get('statue') > 0):
                     self.res_scarlet['furniture'] -= 1
                     self.res_scarlet['ceramic'] -= 1
                     self.res_scarlet['statue'] -= 1
                     self.PO['Scarlet']+=4
-            self.PO['Scarlet'] += self.res_scarlet.get('furniture') + self.res_scarlet.get('ceramic') * 0.5 + self.res_scarlet.get('statue')*1.5
+            self.PO['Scarlet'] += self.res_scarlet.get('furniture') + self.res_scarlet.get('ceramic') * 0.5 + \
+                                  self.res_scarlet.get('statue') * 1.5 + self.res_scarlet.get('jewel') * 2.5
 
             if self.fortress_build.get('Blue') == 'Коллекционер':
                 while (self.res_blue.get('furniture') > 0) and (self.res_blue.get('ceramic') > 0) and (self.res_blue.get('statue') > 0):
@@ -418,13 +440,16 @@ class Playing_Field:
                     self.res_blue['ceramic'] -= 1
                     self.res_blue['statue'] -= 1
                     self.PO['Blue'] += 4
-            self.PO['Blue'] += self.res_blue.get('furniture') + self.res_blue.get('ceramic') * 0.5 + self.res_blue.get('statue') * 1.5
+            self.PO['Blue'] += self.res_blue.get('furniture') + self.res_blue.get('ceramic') * 0.5 + \
+                               self.res_blue.get('statue') * 1.5 + self.res_scarlet.get('jewel') * 2.5
 
+            #Добавляем дополнительные ПО при соблюдении условия здания Архитектор
             if self.fortress_build.get('Scarlet') == 'Архитектор' and self.number_adv_build.get('Scarlet') > self.number_adv_build.get('Blue'):
                 self.PO['Scarlet'] += self.number_adv_build.get('Scarlet')
             elif self.fortress_build.get('Blue') == 'Архитектор' and self.number_adv_build.get('Blue') > self.number_adv_build.get('Scarlet'):
                 self.PO['Scarlet'] += self.number_adv_build.get('Blue')
 
+            #Создаем окошко конца игры
             win_win = tkinter.Toplevel(self.window)
             PO_Scarlet=self.PO.get('Scarlet')
             PO_Blue=self.PO.get('Blue')
@@ -441,6 +466,8 @@ class Playing_Field:
 
 
     def Production(self):
+        #Подсчитываем прирост ресурсов, в зависимости от расположенных зданий
+        #Игрок теряет по 1 еде за каждое своё здание и по 1 монете, за каждую пустую клетку, кроме крепости
         self.new_res = {'food': 0, 'wood': 0, 'clay': 0, 'rock': 0, 'ore': 0, 'gold': 0, 'gem': 0, 'plank': 0,
                         'brick': 0, 'metal': 0, 'furniture': 0, 'ceramic': 0, 'statue': 0, 'instrument': 0, 'jewel': 0,
                         'money': 0, 'gold_money': 0}
@@ -495,9 +522,11 @@ class Playing_Field:
                             self.new_res['jewel'] += 4
                     else:
                         self.new_res['money'] -= 1
+        #Начисляем базовые ресурсы
         for i in ['food', 'wood', 'clay', 'rock', 'ore', 'gold', 'gem', 'money']:
             self.res_player[i] += self.new_res.get(i)
 
+        #Тратим ресурсы, перерабатывая их в товары
         self.Basic_Recycling('wood', 'plank', 1)
         self.Basic_Recycling('clay', 'brick', 1)
         self.Advanced_Recycling('wood', 'ore', 'metal', 0.5, 1)
@@ -511,6 +540,7 @@ class Playing_Field:
             self.res_player['gold'] -= 1
             self.res_player['money'] += 4
 
+        #Тратим необходимое число еды и монет, если их не хватает - теряем ПО
         if self.res_player.get('food') < 0:
             self.PO[self.Player_color] += self.res_player.get('food')
             self.res_player['food'] = 0
@@ -520,6 +550,7 @@ class Playing_Field:
             self.res_player['money'] = 0
 
 
+    #2 функции для получения товаров, за затраченные материалы
     def Basic_Recycling(self, res1, res3, coefficient1):
         while (self.res_player.get(res1)>= coefficient1) and (self.new_res.get(res3)>0):
             self.res_player[res1] -= coefficient1
@@ -534,6 +565,7 @@ class Playing_Field:
             self.res_player[res3] += 1
 
 
+    #Запуск игры
     def Start(self):
         self.Player_color = 'Scarlet'
         self.res_player = self.res_scarlet

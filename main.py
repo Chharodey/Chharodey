@@ -541,4 +541,5 @@ class Playing_Field:
         Playing_Field.window.mainloop()
 
 
-game = Playing_Field()
+if __name__=="__main__":
+    game = Playing_Field()

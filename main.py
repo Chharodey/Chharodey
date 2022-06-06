@@ -34,12 +34,85 @@ class Cell(tkinter.Button):
 class Playing_Field:
 
     window = tkinter.Tk()
-    window.title('Сидачев, Проект - Игра')
-    window.geometry("505x430")
+    window.title('Бароны Мессира')
 
 
     def __init__(self):
+        self.Start_Menu(0)
+
+
+    def Start_Menu(self, mode):
+        self.window.resizable(width=False, height=False)
+        self.window.geometry("268x324")
+        if mode == 1:
+            self.win_win.destroy()
+            for i in range(self.ROW):
+                for j in range(self.COL):
+                    sqr = self.squares[i][j]
+                    sqr.destroy()
+            self.b1.destroy()
+            self.b2.destroy()
+            self.l1.destroy()
+            self.l2.destroy()
+            self.l3.destroy()
+            self.l4.destroy()
+            self.l5.destroy()
+            empty_menu = tkinter.Menu(self.window)
+            self.window.config(menu=empty_menu)
+        elif mode == 2:
+            self.l_stat.destroy()
+            self.b_stat.destroy()
+
+
+        self.b3 = tkinter.Button(text='Новая игра', command=lambda: self.Pick(), width=43, height=5, font=FONT, bg=COLORS.get('S_field'), activebackground=COLORS.get('S_field'))
+        self.b3.grid(row=0, column=0)
+        self.b4 = tkinter.Button(text='(Доп кнопка)', width=43, height=5, font=FONT, bg=COLORS.get('Silver'), activebackground=COLORS.get('Silver'))
+        self.b4.grid(row=1, column=0)
+        self.b5 = tkinter.Button(text='Статистика', command=lambda: self.Stat(), width=43, height=5, font=FONT, bg=COLORS.get('B_field'), activebackground=COLORS.get('B_field'))
+        self.b5.grid(row=2, column=0)
+        self.b6 = tkinter.Button(text='Выход', command=lambda: self.window.destroy(), width=43, height=5, font=FONT, bg=COLORS.get('Brown'), activebackground=COLORS.get('Brown'))
+        self.b6.grid(row=3, column=0)
+        Playing_Field.window.mainloop()
+
+
+    def Pick(self):
+        self.b3.destroy()
+        self.b4.destroy()
+        self.b5.destroy()
+        self.b6.destroy()
+        self.window.geometry("265x319")
+        self.b7 = tkinter.Button(text='Продолжить', command=lambda: self.Start_Game(), width=43, height=5, font=FONT,
+                                 bg=COLORS.get('Brown'), activebackground=COLORS.get('Brown'))
+        self.l6 = tkinter.Label(text='Введите имена игроков', width=43, height=5, font=FONT,
+                                 bg=COLORS.get('Silver'))
+        self.l7 = tkinter.Label(text='Имя алого игрока:', width=43, height=4, font=FONT,
+                                bg=COLORS.get('S_field'))
+        self.l8 = tkinter.Label(text='Имя синего игрока:', width=43, height=4, font=FONT,
+                                bg=COLORS.get('B_field'))
+        self.S_entry = tkinter.Entry(self.window, width=43)
+        self.B_entry = tkinter.Entry(self.window, width=43)
+        self.l6.grid(row=0, column=0)
+        self.l7.grid(row=1, column=0)
+        self.l8.grid(row=3, column=0)
+        self.S_entry.grid(row=2, column=0)
+        self.B_entry.grid(row=4, column=0)
+        self.b7.grid(row=5, column=0)
+
+        #S_nickname =
+        #B_nickname =
+
+
+    def Start_Game(self):
+        self.S_nickname = self.S_entry.get()
+        self.B_nickname = self.B_entry.get()
         #Считывается Файл-шаблон, а также создаются необходимые в будущем переменные
+        self.l6.destroy()
+        self.l7.destroy()
+        self.l8.destroy()
+        self.S_entry.destroy()
+        self.B_entry.destroy()
+        self.b7.destroy()
+        self.window.geometry('505x450')
         f = open('Template 1.txt')
         strings = f.readlines()
         f.close()
@@ -68,7 +141,7 @@ class Playing_Field:
                 self.ore = 0
                 self.gold = 0
                 self.gem = 0
-                #Цена клеттки выстраивается в зависимости от приближенности к главной диагонали матрицы
+                #Цена клетки выстраивается в зависимости от приближенности к главной диагонали матрицы
                 difference = abs(i-j)
                 self.cell_cost = ((self.COL-1)-difference)
                 #Характеристики клетки зависят от соответствующей буквы в шаблоне и рандома
@@ -450,19 +523,26 @@ class Playing_Field:
                 self.PO['Scarlet'] += self.number_adv_build.get('Blue')
 
             #Создаем окошко конца игры
-            win_win = tkinter.Toplevel(self.window)
-            PO_Scarlet=self.PO.get('Scarlet')
-            PO_Blue=self.PO.get('Blue')
-            if PO_Scarlet > PO_Blue:
-                tkinter.Label(win_win, text='Победа за Алым', bg = COLORS.get('S_field')).grid(row=0, column=0, columnspan=2, sticky='N'+'S'+'W'+'E')
-            elif PO_Scarlet < PO_Blue:
-                tkinter.Label(win_win, text='Победа за Синим', bg = COLORS.get('B_field')).grid(row=0, column=0, columnspan=2, sticky='N'+'S'+'W'+'E')
+            self.win_win = tkinter.Toplevel(self.window)
+            self.win_win.grab_set()
+            self.win_win.title('')
+            self.win_win.protocol("WM_DELETE_WINDOW", lambda: 1)
+            self.win_win.resizable(width=False, height=False)
+            self.PO_Scarlet=self.PO.get('Scarlet')
+            self.PO_Blue=self.PO.get('Blue')
+            if self.PO_Scarlet > self.PO_Blue:
+                tkinter.Label(self.win_win, text='Победа за Алым', bg = COLORS.get('S_field')).grid(row=0, column=0, columnspan=2, sticky='N'+'S'+'W'+'E')
+            elif self.PO_Scarlet < self.PO_Blue:
+                tkinter.Label(self.win_win, text='Победа за Синим', bg = COLORS.get('B_field')).grid(row=0, column=0, columnspan=2, sticky='N'+'S'+'W'+'E')
             else:
-                tkinter.Label(win_win, text='Ничья', bg = COLORS.get('White')).grid(row=0, column=0, columnspan=2, sticky='N'+'S'+'W'+'E')
+                tkinter.Label(self.win_win, text='Ничья', bg = COLORS.get('White')).grid(row=0, column=0, columnspan=2, sticky='N'+'S'+'W'+'E')
 
-            tkinter.Label(win_win, text=f'ПО Алого = {PO_Scarlet}', fg=COLORS.get('White'), bg = COLORS.get('Scarlet')).grid(row=1, column=0)
-            tkinter.Label(win_win, text=f'ПО Синего = {PO_Blue}', fg=COLORS.get('White'), bg = COLORS.get('Blue')).grid(row=1, column=1)
-            tkinter.Button(win_win, text='Завершить игру', command=self.window.destroy, bg = COLORS.get('Brown')).grid(row=2, column=0, columnspan=2, sticky='N'+'S'+'W'+'E')
+            tkinter.Label(self.win_win, text=f'ПО Алого = {self.PO_Scarlet}', fg=COLORS.get('White'), bg = COLORS.get('Scarlet')).grid(row=1, column=0)
+            tkinter.Label(self.win_win, text=f'ПО Синего = {self.PO_Blue}', fg=COLORS.get('White'), bg = COLORS.get('Blue')).grid(row=1, column=1)
+            tkinter.Button(self.win_win, text='В главное меню', command=lambda: self.Start_Menu(1), bg = COLORS.get('Aqua')).grid(row=2, column=0, columnspan=2, sticky='N'+'S'+'W'+'E')
+            tkinter.Button(self.win_win, text='Завершить игру', command=self.window.destroy, bg=COLORS.get('Brown')).grid(
+                row=3, column=0, columnspan=2, sticky='N' + 'S' + 'W' + 'E')
+            self.Record()
 
 
     def Production(self):
@@ -565,12 +645,69 @@ class Playing_Field:
             self.res_player[res3] += 1
 
 
+    def Stat(self):
+        self.window.geometry("240x438")
+        self.b3.destroy()
+        self.b4.destroy()
+        self.b5.destroy()
+        self.b6.destroy()
+        file_1=open('Статистика.txt', 'r')
+        stat='\n'
+        for i in range(0,10):
+            record = file_1.readline()
+            stat+=record + '\n'
+            #print(record.split())
+
+        self.l_stat = tkinter.Label(text=stat, width=40, height=20, font=FONT, bg=COLORS.get('Brown'))
+        self.l_stat.place(x=0, y=0)
+        self.l_stat1 = tkinter.Label(text=f'Наилучший результат алого:\n{file_1.readline()}', width=40, font=FONT, bg=COLORS.get('S_field'))
+        self.l_stat1.place(x=0, y=280)
+        self.l_stat2 = tkinter.Label(text=f'Наилучший результат синего:\n{file_1.readline()}', width=40, font=FONT, bg=COLORS.get('B_field'))
+        self.l_stat2.place(x=0, y=320)
+        self.l_stat3 = tkinter.Label(text=f'Наилучший суммарный результат:\n{file_1.readline()}', width=40, height=3, font=FONT, bg=COLORS.get('Silver'))
+        self.l_stat3.place(x=0, y=360)
+        self.b_stat = tkinter.Button(text='Главное меню', command=lambda: self.Start_Menu(2), width=40, height=2, font=FONT, bg=COLORS.get('Aqua'), activebackground=COLORS.get('Aqua'))
+        self.b_stat.place(x=0, y=400)
+        file_1.close()
+
+
+    def Record(self):
+        file_1 = open('Статистика.txt', 'r')
+        record_list=[]
+        for i in range(0, 10):
+            record=file_1.readline()[:-1]
+            if i != 0:
+               record_list.append(record)
+        new_record = f'{self.S_nickname} {self.PO_Scarlet} = {self.B_nickname} {self.PO_Blue}'
+        record_list.append(new_record)
+
+        record = file_1.readline()[:-1]
+        if self.PO_Scarlet > float(record.split()[1]):
+            record = f'{self.S_nickname} {self.PO_Scarlet} = {self.B_nickname} {self.PO_Blue}'
+        record_list.append(record)
+
+        record = file_1.readline()[:-1]
+        if self.PO_Blue > float(record.split()[4]):
+            record = f'{self.S_nickname} {self.PO_Scarlet} = {self.B_nickname} {self.PO_Blue}'
+        record_list.append(record)
+
+        record = file_1.readline()
+        if self.PO_Blue+self.PO_Scarlet > float(record.split()[1]) + float(record.split()[4]):
+            record = f'{self.S_nickname} {self.PO_Scarlet} = {self.B_nickname} {self.PO_Blue}'
+        record_list.append(record)
+        file_1.close()
+
+        file_1 = open('Статистика.txt', 'w')
+        for i in record_list:
+            file_1.write(i+'\n')
+        file_1.close()
+
+
     #Запуск игры
     def Start(self):
         self.Player_color = 'Scarlet'
         self.res_player = self.res_scarlet
         self.Field_Creation()
-        Playing_Field.window.mainloop()
 
 
 if __name__=="__main__":
